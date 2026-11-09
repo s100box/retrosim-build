@@ -1,0 +1,59 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# SPDX-FileCopyrightText: 2026 Howard M. Harte
+# toolchain.ninja -- THE single place a tool location/version changes for the
+# whole retrosim workspace. Three consumers, one file:
+#
+#   ninja:      include ../../retrosim-build/toolchain.ninja
+#               (path relative to the dir ninja runs in), then use the
+#               variables ($verible_root, $gowin_simlib, ...).
+#   bash:       hooks/gate-env.sh and gowin.sh parse the *_root lines and
+#               derive/export GWSH, PROGRAMMER_CLI, VERIBLE_ROOT, ...
+#               (an already-set environment variable always wins).
+#   PowerShell: dot-source toolchain.ps1, which parses this file the same way.
+#
+# FORMAT CONTRACT: every assignment stays exactly `name = value` on one line
+# (ninja variable syntax; the bash/ps1 parsers rely on it). Values may contain
+# spaces. Comments start with #.
+#
+# When a toolchain is reinstalled/upgraded, edit ONLY this file. Do not add
+# version-pinned tool paths to any other repo -- default from the environment
+# variables these resolvers export instead.
+
+# `bash` MUST be pinned, and it is not a preference. ninja launches every
+# command with CreateProcess, whose module search order is: application dir,
+# current dir, C:\Windows\System32, the Windows dir, and only THEN PATH. On any
+# host with WSL installed, System32 holds bash.exe -- the Linux one. So a rule
+# written `command = bash gate_foo.sh` runs the script inside WSL Ubuntu no
+# matter what PATH says and no matter which shell launched ninja; `where bash`
+# listing Git's bash first is irrelevant, because PATH is consulted last.
+#
+# Use `$bash_exe`, never a bare `bash`, in any ninja rule.
+bash_exe = C:/Program Files/Git/usr/bin/bash.exe
+
+gowin_root = C:/Gowin/Gowin_V1.9.12.03_x64
+verible_root = C:/Users/hharte/verible/verible-v0.0-4053-g89d4d98a-win64
+oss_cad_suite = C:/Users/hharte/oss-cad-suite
+vs_root = C:/Program Files/Microsoft Visual Studio/18/Insiders
+sdcc_root = C:/Program Files/SDCC
+# sdcc_m6809_root: the sdcc-6809 fork's compiler (m6809 back end), built
+# NATIVELY on Windows -- see sdcc-6809/tools/installer/README.md.  Layout is
+# bin/ include/ lib/<port>/, so it is a drop-in `sdcc` for every port, not
+# only m6809.  Separate from sdcc_root on purpose: it is a fork.
+sdcc_m6809_root = C:/Users/hharte/sdcc-m6809
+# Native Windows GNU VAX tools; no WSL or MSYS runtime required at use time.
+# Source/signature pins and rebuild procedure: doc/vax-binutils-windows.md.
+vax_binutils_root = C:/Users/hharte/vax-binutils/2.47
+# vivado_root: the version dir containing bin/vivado.bat (e.g.
+# C:/AMDDesignTools/2025.1/Vivado). Unset on hosts without Vivado --
+# vivado.sh then falls back to PATH + newest-install discovery, and its
+# vivado_require reports "toolchain absent, not a build failure" (127).
+# vivado_root =
+
+# Derived (ninja-side convenience; bash/ps1 derive the same from the roots).
+gwsh = $gowin_root/IDE/bin/gw_sh.exe
+programmer_cli = $gowin_root/Programmer/bin/programmer_cli.exe
+gowin_simlib = $gowin_root/IDE/simlib
+verible_dir = $verible_root
+verible_syntax = $verible_root/verible-verilog-syntax.exe
+verible_lint = $verible_root/verible-verilog-lint.exe
+verible_format = $verible_root/verible-verilog-format.exe

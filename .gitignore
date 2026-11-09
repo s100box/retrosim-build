@@ -1,0 +1,9 @@
+# Python bytecode from the tools/ scripts (the commit hooks import
+# xcheck-links.py, which leaves a __pycache__ behind).
+__pycache__/
+*.pyc
+
+# Verilator's generated build trees under the MSVC wrapper. tools/
+# verilator_msvc drives Verilator per top module, and each run leaves an
+# obj_dir_<top> beside the script.
+tools/verilator_msvc/obj_dir*/

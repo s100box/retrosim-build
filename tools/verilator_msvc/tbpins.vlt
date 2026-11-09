@@ -1,0 +1,18 @@
+// SPDX-License-Identifier: MIT OR Apache-2.0
+// SPDX-FileCopyrightText: 2026 Howard M. Harte
+`verilator_config
+// PINMISSING is an ERROR in this flow (see CMakeLists.txt), because an
+// unconnected INPUT is otherwise silent in everything the workspace runs:
+// iverilog has no missing-pin diagnostic at all, and a plain warning would not
+// fail a build that also passes -Wno-fatal. That silence cost a month once --
+// hh-c128's machine tops never connected z180_mem_subsys.wstrb_i and the
+// machines took NO RAM WRITES AT ALL (hh-c128 PROGRESS 6.27).
+//
+// A TESTBENCH is the one place where leaving pins off is legitimate: it
+// instantiates the DUT to exercise one thing and ignores the outputs it does
+// not score. So the rule keeps its teeth on every RTL-to-RTL instantiation --
+// which is where the defect class lives -- and is waived for bench files only.
+//
+// Deliberately unused pins in RTL should be written `.pin()`, explicitly empty:
+// that says "unused on purpose" where omission says nothing.
+lint_off -rule PINMISSING -file "*tb_*.sv"

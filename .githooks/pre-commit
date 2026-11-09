@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# SPDX-FileCopyrightText: 2026 Howard M. Harte
+# retrosim-build commit gate: bash syntax across the shared build
+# library (this repo is sourced by every sibling's build/gate flow —
+# a syntax slip here breaks them all at once).
+# Bypass a work-in-progress commit with:
+#   SKIP_GATE=1 git commit ...
+# Enable in a fresh clone with:
+#   git config core.hooksPath .githooks
+set -euo pipefail
+
+if [ -n "${SKIP_GATE:-}" ]; then
+  echo "pre-commit: SKIP_GATE set — skipping the retrosim-build gate"
+  exit 0
+fi
+
+cd "$(git rev-parse --show-toplevel)"
+
+echo "pre-commit: [1/1] bash -n over the tracked shell sources"
+rc=0
+while IFS= read -r f; do
+  bash -n "$f" || { echo "pre-commit: syntax error in $f" >&2; rc=1; }
+done < <(git ls-files '*.sh' 'hooks/*')
+exit $rc

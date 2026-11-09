@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# SPDX-FileCopyrightText: 2026 Howard M. Harte
+# Example consumer lint exceptions, not a mandatory shared waiver set. Remove
+# entries the consumer does not need; justify every retained exception.
+
+# Project convention: ALL_CAPS_SNAKE for params; mixed for port-style params.
+-parameter-name-style
+
+# iverilog does not cleanly parse `parameter string`.
+explicit-parameter-storage-type=exempt_type:string

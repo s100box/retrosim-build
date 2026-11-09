@@ -1,0 +1,15 @@
+# Normalize line endings to LF for the RTL/FPGA toolchain (Verible's formatter
+# safety check trips on CRLF). Scoped to RTL/FPGA file types so the existing
+# Rust sources are not renormalized.
+*.sv    text eol=lf
+*.svh   text eol=lf
+*.v     text eol=lf
+*.cst   text eol=lf
+*.sdc   text eol=lf
+*.tcl   text eol=lf
+*.ninja text eol=lf
+*.sh    text eol=lf
+*.py    text eol=lf
+*.core  text eol=lf
+*.gprj  text eol=lf
+.githooks/* text eol=lf
